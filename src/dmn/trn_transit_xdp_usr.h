@@ -47,7 +47,7 @@
 #include "bpf/libbpf.h"
 
 #include "extern/cJSON.h"
-
+#include "extern/bpf/bpf.h"
 #include "trn_datamodel.h"
 
 struct ebpf_prog_stage_t {
