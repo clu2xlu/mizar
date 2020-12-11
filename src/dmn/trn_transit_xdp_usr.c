@@ -31,7 +31,7 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <linux/if.h>
-#include "extern/linux/err.h"
+#include <linux/bpf.h>
 #include "trn_transit_xdp_usr.h"
 #include "trn_log.h"
 
@@ -659,4 +659,14 @@ int trn_delete_transit_network_policy_except_map(struct user_metadata_t *md,
 		return 1;
 	}
 	return 0;
+}
+
+int map_batch_update(int map_fd, __u32 max_entries, void *keys, void *values)
+{
+	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
+		.elem_flags = 0,
+		.flags = 0,
+	);
+	int err = bpf_map_update_batch(map_fd, keys, values, &max_entries, &opts);
+	return err;
 }

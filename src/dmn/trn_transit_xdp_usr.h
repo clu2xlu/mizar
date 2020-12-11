@@ -48,6 +48,8 @@
 
 #include "extern/cJSON.h"
 #include "extern/bpf/bpf.h"
+#include "extern/bpf/libbpf.h"
+#include "extern/bpf/libbpf_common.h"
 #include "trn_datamodel.h"
 
 struct ebpf_prog_stage_t {
