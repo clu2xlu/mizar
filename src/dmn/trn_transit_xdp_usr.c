@@ -32,6 +32,10 @@
 #include <arpa/inet.h>
 #include <linux/if.h>
 #include <linux/bpf.h>
+#include "extern/linux/err.h"
+#include "extern/bpf/bpf.h"
+#include "extern/bpf/libbpf.h"
+#include "extern/bpf/libbpf_common.h"
 #include "trn_transit_xdp_usr.h"
 #include "trn_log.h"
 
