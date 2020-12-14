@@ -213,8 +213,8 @@ program RPC_TRANSIT_REMOTE_PROTOCOL {
                 int LOAD_TRANSIT_XDP_PIPELINE_STAGE(rpc_trn_ebpf_prog_t) = 21;
                 int UNLOAD_TRANSIT_XDP_PIPELINE_STAGE(rpc_trn_ebpf_prog_stage_t) = 22;
 
-                int UPDATE_TRANSIT_NETWORK_POLICY(rpc_trn_vsip_cidr_t) = 23;
-                int DELETE_TRANSIT_NETWORK_POLICY(rpc_trn_vsip_cidr_key_t) = 24;
+                int UPDATE_TRANSIT_NETWORK_POLICY(rpc_trn_vsip_cidr_t*) = 23;
+                int DELETE_TRANSIT_NETWORK_POLICY(rpc_trn_vsip_cidr_key_t*) = 24;
 
           } = 1;
 

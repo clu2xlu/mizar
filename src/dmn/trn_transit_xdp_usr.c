@@ -31,7 +31,11 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <linux/if.h>
+#include <linux/bpf.h>
 #include "extern/linux/err.h"
+#include "extern/bpf/bpf.h"
+#include "extern/bpf/libbpf.h"
+#include "extern/bpf/libbpf_common.h"
 #include "trn_transit_xdp_usr.h"
 #include "trn_log.h"
 
@@ -588,9 +592,9 @@ uint32_t trn_get_interface_ipv4(int itf_idx)
 
 int trn_update_transit_network_policy_primary_map(struct user_metadata_t *md,
 						  struct vsip_cidr_t *ipcidr,
-						  __u64 bitmap)
+						  __u64 *bitmaps)
 {
-	int err = bpf_map_update_elem(md->ing_vsip_prim_map_fd, ipcidr, &bitmap, 0);
+	int err = map_batch_update(md->ing_vsip_prim_map_fd, 2, ipcidr, bitmaps);
 	if (err) {
 		TRN_LOG_ERROR("Store Primary ingress map failed (err:%d).",
 			      err);
@@ -601,9 +605,9 @@ int trn_update_transit_network_policy_primary_map(struct user_metadata_t *md,
 
 int trn_update_transit_network_policy_supplementary_map(struct user_metadata_t *md,
 							struct vsip_cidr_t *ipcidr,
-							__u64 bitmap)
+							__u64 *bitmaps)
 {
-	int err = bpf_map_update_elem(md->ing_vsip_supp_map_fd, ipcidr, &bitmap, 0);
+	int err = map_batch_update(md->ing_vsip_supp_map_fd, 2, ipcidr, bitmaps);
 	if (err) {
 		TRN_LOG_ERROR("Store Supplementary ingress map failed (err:%d).",
 			      err);
@@ -614,9 +618,9 @@ int trn_update_transit_network_policy_supplementary_map(struct user_metadata_t *
 
 int trn_update_transit_network_policy_except_map(struct user_metadata_t *md,
 						 struct vsip_cidr_t *ipcidr,
-						 __u64 bitmap)
+						 __u64 *bitmaps)
 {
-	int err = bpf_map_update_elem(md->ing_vsip_except_map_fd, ipcidr, &bitmap, 0);
+	int err = map_batch_update(md->ing_vsip_except_map_fd, 2, ipcidr, bitmaps);
 	if (err) {
 		TRN_LOG_ERROR("Store Except ingress map failed (err:%d).",
 			      err);
@@ -659,4 +663,14 @@ int trn_delete_transit_network_policy_except_map(struct user_metadata_t *md,
 		return 1;
 	}
 	return 0;
+}
+
+int map_batch_update(int map_fd, __u32 max_entries, void *keys, void *values)
+{
+	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
+		.elem_flags = 0,
+		.flags = 0,
+	);
+	int err = bpf_map_update_batch(map_fd, keys, values, &max_entries, &opts);
+	return err;
 }

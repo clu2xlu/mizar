@@ -45,9 +45,10 @@
 
 #include "bpf/bpf.h"
 #include "bpf/libbpf.h"
-
+#include "extern/bpf/bpf.h"
+#include "extern/bpf/libbpf.h"
+#include "extern/bpf/libbpf_common.h"
 #include "extern/cJSON.h"
-
 #include "trn_datamodel.h"
 
 struct ebpf_prog_stage_t {
@@ -193,16 +194,16 @@ int trn_add_prog(struct user_metadata_t *md, unsigned int prog_idx,
 int trn_remove_prog(struct user_metadata_t *md, unsigned int prog_idx);
 
 int trn_update_transit_network_policy_primary_map(struct user_metadata_t *md,
-						  struct vsip_cidr_t *cidr,
-						  __u64 bitmap);
+						  struct vsip_cidr_t *cidrs,
+						  __u64 *bitmaps);
 
 int trn_update_transit_network_policy_supplementary_map(struct user_metadata_t *md,
-							struct vsip_cidr_t *cidr,
-							__u64 bitmap);
+							struct vsip_cidr_t *cidrs,
+							__u64 *bitmaps);
 
 int trn_update_transit_network_policy_except_map(struct user_metadata_t *md,
-						 struct vsip_cidr_t *cidr,
-						 __u64 bitmap);
+						 struct vsip_cidr_t *cidrs,
+						 __u64 *bitmaps);
 
 int trn_delete_transit_network_policy_primary_map(struct user_metadata_t *md,
 						  struct vsip_cidr_t *cidr);
@@ -212,3 +213,5 @@ int trn_delete_transit_network_policy_supplementary_map(struct user_metadata_t *
 
 int trn_delete_transit_network_policy_except_map(struct user_metadata_t *md,
 						 struct vsip_cidr_t *cidr);
+
+int map_batch_update(int map_fd, __u32 max_entries, void *keys, void *values);
