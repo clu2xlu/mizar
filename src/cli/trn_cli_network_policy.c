@@ -41,11 +41,11 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 		return -EINVAL;
 	}
 	int *rc;
-	struct rpc_trn_vsip_cidr_t cidrval;
+	struct rpc_trn_vsip_cidr_t* cidrval = NULL;
 	char rpc[] = "update_transit_network_policy_1";
-	cidrval.interface = conf.intf;
+	cidrval->interface = conf.intf;
 
-	int err = trn_cli_parse_network_policy_cidr(json_str, &cidrval);
+	int err = trn_cli_parse_network_policy_cidr(json_str, cidrval);
 	cJSON_Delete(json_str);
 
 	if (err != 0) {
@@ -53,7 +53,7 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 		return -EINVAL;
 	}
 
-	rc = update_transit_network_policy_1(&cidrval, clnt);
+	rc = update_transit_network_policy_1(cidrval, clnt);
 	if (rc == (int *)NULL) {
 		print_err("RPC Error: client call failed: update_transit_network_policy_1.\n");
 		return -EINVAL;
@@ -66,7 +66,7 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 		return -EINVAL;
 	}
 
-	dump_network_policy(&cidrval);
+	dump_network_policy(cidrval);
 	print_msg("update_transit_network_policy_1 successfully updated network policy\n");
 	
 	return 0;

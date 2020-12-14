@@ -1267,7 +1267,9 @@ int *update_transit_network_policy_1_svc(rpc_trn_vsip_cidr_t *policy, struct svc
 	static int result;
 	int rc;
 	char *itf = policy->interface;
-	struct vsip_cidr_t cidr;
+	struct vsip_cidr_t* cidr = NULL;
+	int len = sizeof(policy) / sizeof(*policy);
+	__u64 bitmaps[len];
 
 	TRN_LOG_INFO("update_transit_network_policy_1_svc service");
 
@@ -1278,22 +1280,26 @@ int *update_transit_network_policy_1_svc(rpc_trn_vsip_cidr_t *policy, struct svc
 		goto error;
 	}
 
-	cidr.tunnel_id = policy->tunid;
-	// Add explaination here for magic number 96
-	cidr.prefixlen = policy->cidr_prefixlen + 96;
-	cidr.local_ip = policy->local_ip;
-	cidr.remote_ip = policy->cidr_ip;
-	__u64 bitmap = policy->bit_val;
+	for (int i = 0; i < len; i++)
+	{
+		cidr->tunnel_id = policy->tunid;
+		// Add explaination here for magic number 96
+		cidr->prefixlen = policy->cidr_prefixlen + 96;
+		cidr->local_ip = policy->local_ip;
+		cidr->remote_ip = policy->cidr_ip;
+		bitmaps[i] = policy->bit_val;
+		cidr++;
+	}
 
 	switch (policy->cidr_type) {
 	case PRIMARY:
-		rc = trn_update_transit_network_policy_primary_map(md, &cidr, bitmap);
+		rc = trn_update_transit_network_policy_primary_map(md, cidr, bitmaps);
 		break;
 	case SUPPLEMENTARY:
-		rc = trn_update_transit_network_policy_supplementary_map(md, &cidr, bitmap);
+		rc = trn_update_transit_network_policy_supplementary_map(md, cidr, bitmaps);
 		break;
 	case EXCEPTION:
-		rc = trn_update_transit_network_policy_except_map(md, &cidr, bitmap);
+		rc = trn_update_transit_network_policy_except_map(md, cidr, bitmaps);
 		break;
 	default:
 		result = RPC_TRN_FATAL;
