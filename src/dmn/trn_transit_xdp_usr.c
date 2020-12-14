@@ -450,7 +450,10 @@ int trn_delete_endpoint(struct user_metadata_t *md,
 			      err);
 		return 1;
 	}
-
+	// src_ip = ep.tunip[2]
+	// __be64 tunnel_id
+	// __builtin_memcpy(&tunnel_id, &ep.tunip, sizeof(tunnel_id))
+	// trn_delete_ingress_enforce_map(md, src_ip)
 	return 0;
 }
 

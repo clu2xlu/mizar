@@ -415,7 +415,7 @@ int *delete_ep_1_svc(rpc_trn_endpoint_key_t *argp, struct svc_req *rqstp)
 	UNUSED(rqstp);
 	static int result;
 	result = 0;
-	int rc;
+	int rc1, rc2;
 	struct endpoint_key_t epkey;
 	char buffer[INET_ADDRSTRLEN];
 	const char *parsed_ip =
@@ -437,11 +437,20 @@ int *delete_ep_1_svc(rpc_trn_endpoint_key_t *argp, struct svc_req *rqstp)
 	memcpy(epkey.tunip, &argp->tunid, sizeof(argp->tunid));
 	epkey.tunip[2] = argp->ip;
 
-	rc = trn_delete_endpoint(md, &epkey);
+	rc1 = trn_delete_endpoint(md, &epkey);
 
-	if (rc != 0) {
+	if (rc1 != 0) {
 		TRN_LOG_ERROR("Failure deleting ep %d on interface %s",
 			      epkey.tunip[2], argp->interface);
+		result = RPC_TRN_ERROR;
+		goto error;
+	}
+
+	rc2 = trn_delete_ingress_enforce_map(md, &argp->ip);
+
+	if (rc2 != 0) {
+		TRN_LOG_ERROR("Failure deleting ep %d with ip address: 0x%x",
+			      epkey.tunip[2], argp->ip);
 		result = RPC_TRN_ERROR;
 		goto error;
 	}
