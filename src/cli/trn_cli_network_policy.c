@@ -42,10 +42,24 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 	}
 	int *rc;
 	struct rpc_trn_vsip_cidr_t cidrval;
+	struct rpc_trn_vsip_cidr_t *cidr_list;
 	char rpc[] = "update_transit_network_policy_1";
 	cidrval.interface = conf.intf;
 
-	int err = trn_cli_parse_network_policy_cidr(json_str, &cidrval);
+	for (int i = 0; i < cJSON_GetArraySize(json_str); i++)
+	{
+		cJSON *policy = cJSON_GetArrayItem(json_str, i);
+		int err = trn_cli_parse_network_policy_cidr(policy, &cidrval);
+
+		if (err != 0) {
+			print_err("Error: parsing network policy protocol port config.\n");
+			return -EINVAL;
+		}
+
+		memcpy(cidr_list, &cidrval, sizeof(struct rpc_trn_vsip_cidr_t));
+
+		cidr_list++;
+	}
 	cJSON_Delete(json_str);
 
 	if (err != 0) {
@@ -53,7 +67,7 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 		return -EINVAL;
 	}
 
-	rc = update_transit_network_policy_1(&cidrval, clnt);
+	rc = update_transit_network_policy_1(cidr_list, clnt);
 	if (rc == (int *)NULL) {
 		print_err("RPC Error: client call failed: update_transit_network_policy_1.\n");
 		return -EINVAL;
@@ -66,7 +80,11 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 		return -EINVAL;
 	}
 
-	dump_network_policy(&cidrval);
+	for (int k = 0; k < sizeof(cidr_list)/sizeof(*cidr_list); k++)
+	{
+		dump_network_policy(cidr_list);
+		cidr_list++;
+	}
 	print_msg("update_transit_network_policy_1 successfully updated network policy\n");
 	
 	return 0;

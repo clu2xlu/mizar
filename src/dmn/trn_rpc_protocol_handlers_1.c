@@ -1278,35 +1278,39 @@ int *update_transit_network_policy_1_svc(rpc_trn_vsip_cidr_t *policy, struct svc
 		goto error;
 	}
 
-	cidr.tunnel_id = policy->tunid;
-	// Add explaination here for magic number 96
-	cidr.prefixlen = policy->cidr_prefixlen + 96;
-	cidr.local_ip = policy->local_ip;
-	cidr.remote_ip = policy->cidr_ip;
-	__u64 bitmap = policy->bit_val;
+	for (int i = 0; i < (sizeof(policy) / sizeof(* policy)); i++)
+	{
+		cidr.tunnel_id = policy->tunid;
+		// Add explaination here for magic number 96
+		cidr.prefixlen = policy->cidr_prefixlen + 96;
+		cidr.local_ip = policy->local_ip;
+		cidr.remote_ip = policy->cidr_ip;
+		__u64 bitmap = policy->bit_val;
 
-	switch (policy->cidr_type) {
-	case PRIMARY:
-		rc = trn_update_transit_network_policy_primary_map(md, &cidr, bitmap);
-		break;
-	case SUPPLEMENTARY:
-		rc = trn_update_transit_network_policy_supplementary_map(md, &cidr, bitmap);
-		break;
-	case EXCEPTION:
-		rc = trn_update_transit_network_policy_except_map(md, &cidr, bitmap);
-		break;
-	default:
-		result = RPC_TRN_FATAL;
-		goto error;
+		switch (policy->cidr_type) {
+		case PRIMARY:
+			rc = trn_update_transit_network_policy_primary_map(md, &cidr, bitmap);
+			break;
+		case SUPPLEMENTARY:
+			rc = trn_update_transit_network_policy_supplementary_map(md, &cidr, bitmap);
+			break;
+		case EXCEPTION:
+			rc = trn_update_transit_network_policy_except_map(md, &cidr, bitmap);
+			break;
+		default:
+			result = RPC_TRN_FATAL;
+			goto error;
+		}
+
+		if (rc != 0) {
+			TRN_LOG_ERROR("Failure updating transit network policy map cidr: 0x%x / %d, for interface %s",
+						policy->cidr_ip, policy->cidr_prefixlen, policy->interface);
+			result = RPC_TRN_FATAL;
+			goto error;
+		}
+
+		policy++;
 	}
-
-	if (rc != 0) {
-		TRN_LOG_ERROR("Failure updating transit network policy map cidr: 0x%x / %d, for interface %s",
-					policy->cidr_ip, policy->cidr_prefixlen, policy->interface);
-		result = RPC_TRN_FATAL;
-		goto error;
-	}
-
 	result = 0;
 	return &result;
 
