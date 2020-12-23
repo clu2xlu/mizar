@@ -1278,7 +1278,7 @@ int *update_transit_network_policy_1_svc(rpc_trn_vsip_cidr_t *policy, struct svc
 		goto error;
 	}
 
-	for (int i = 0; i < (sizeof(policy) / sizeof(* policy)); i++)
+	for (int i = 0; i < (int)(sizeof(policy) / sizeof(*policy)); i++)
 	{
 		cidr.tunnel_id = policy->tunid;
 		// Add explaination here for magic number 96

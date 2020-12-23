@@ -36,17 +36,20 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 
 	char *buf = conf.conf_str;
 	json_str = trn_cli_parse_json(buf);
+	int counter = cJSON_GetArraySize(json_str); 
 
 	if (json_str == NULL) {
 		return -EINVAL;
 	}
 	int *rc;
 	struct rpc_trn_vsip_cidr_t cidrval;
-	struct rpc_trn_vsip_cidr_t *cidr_list;
+	struct rpc_trn_vsip_cidr_t *cidr_list = malloc(counter * sizeof(struct rpc_trn_vsip_cidr_t));
 	char rpc[] = "update_transit_network_policy_1";
 	cidrval.interface = conf.intf;
 
-	for (int i = 0; i < cJSON_GetArraySize(json_str); i++)
+	cidr_list = &cidrval;
+
+	for (int i = 0; i < counter; i++)
 	{
 		cJSON *policy = cJSON_GetArrayItem(json_str, i);
 		int err = trn_cli_parse_network_policy_cidr(policy, &cidrval);
@@ -57,15 +60,11 @@ int trn_cli_update_transit_network_policy_subcmd(CLIENT *clnt, int argc, char *a
 		}
 
 		memcpy(cidr_list, &cidrval, sizeof(struct rpc_trn_vsip_cidr_t));
-
+		dump_network_policy(cidr_list);
+		dump_network_policy(&cidrval);
 		cidr_list++;
 	}
 	cJSON_Delete(json_str);
-
-	if (err != 0) {
-		print_err("Error: parsing network policy config.\n");
-		return -EINVAL;
-	}
 
 	rc = update_transit_network_policy_1(cidr_list, clnt);
 	if (rc == (int *)NULL) {
