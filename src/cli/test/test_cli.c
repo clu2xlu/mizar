@@ -2128,23 +2128,6 @@ static void test_trn_cli_update_transit_network_policy_subcmd(void **state)
 			  }]) };
 
 	char *argv2[] = { "update-network-policy-ingress", "-i", "eth0", "-j", QUOTE([{
-				  "tunnel_id": 3,
-				  "local_ip": "10.0.0.3",
-				  "cidr_prefixlen": "16",
-				  "cidr_ip": "172.0.0.9",
-				  "cidr_type": "1",
-				  "bit_value": "10"
-			  },
-			  {
-				  "tunnel_id": 1,
-				  "local_ip": "10.0.0.1",
-				  "cidr_prefixlen": "17",
-				  "cidr_ip": "172.0.0.6",
-				  "cidr_type": "2",
-				  "bit_value": "1"
-			  }]) };
-
-	char *argv3[] = { "update-network-policy-ingress", "-i", "eth0", "-j", QUOTE([{
 				  "tunnel_id": "3",
 				  "local_ip": 10.0.0.3,
 				  "cidr_prefixlen": "16",
@@ -2182,10 +2165,9 @@ static void test_trn_cli_update_transit_network_policy_subcmd(void **state)
 		.bit_val = 1
 	};
 
-	struct rpc_trn_vsip_cidr_t *policies;
-	policies = &exp_policy1;
-	policies++;
-	policies = &exp_policy2;
+	struct rpc_trn_vsip_cidr_t policies[2];
+	policies[0] = exp_policy1;
+	policies[1] = exp_policy2;
 
 	/* Test call update_transit_network_policy successfully */
 	TEST_CASE("update-network-policy-ingress succeed with well formed policy json input");
@@ -2197,14 +2179,9 @@ static void test_trn_cli_update_transit_network_policy_subcmd(void **state)
 	rc = trn_cli_update_transit_network_policy_subcmd(NULL, argc, argv1);
 	assert_int_equal(rc, 0);
 
-	/* Test parse network policy input error*/
-	TEST_CASE("update-network-policy-ingress is not called with non-string field");
-	rc = trn_cli_update_transit_network_policy_subcmd(NULL, argc, argv2);
-	assert_int_equal(rc, -EINVAL);
-
 	/* Test parse network policy input error 2*/
 	TEST_CASE("update-network-policy-ingress is not called malformed json");
-	rc = trn_cli_update_transit_network_policy_subcmd(NULL, argc, argv3);
+	rc = trn_cli_update_transit_network_policy_subcmd(NULL, argc, argv2);
 	assert_int_equal(rc, -EINVAL);
 
 	/* Test call update_transit_network_policy_1 return error*/

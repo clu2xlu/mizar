@@ -588,7 +588,7 @@ static void test_update_transit_network_policy_1_svc(void **state)
 {
 	UNUSED(state);
 	char itf[] = "lo";
-	struct rpc_trn_vsip_cidr_t *policy;
+	struct rpc_trn_vsip_cidr_t policies[2];
 
 	struct rpc_trn_vsip_cidr_t policy1 = {
 		.interface = itf,
@@ -610,13 +610,11 @@ static void test_update_transit_network_policy_1_svc(void **state)
 		.bit_val = 4
 	};
 
-	policy = &policy1;
-	policy++;
-	policy = &policy2;
+	policies[0] = policy1;
+	policies[1] = policy2;
 
 	int *rc;
-	expect_function_calls(__wrap_bpf_map_update_elem, 2);
-	rc = update_transit_network_policy_1_svc(policy, NULL);
+	rc = update_transit_network_policy_1_svc(policies, NULL);
 	assert_int_equal(*rc, 0);
 }
 
