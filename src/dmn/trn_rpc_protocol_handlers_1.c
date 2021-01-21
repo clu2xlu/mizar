@@ -1364,10 +1364,10 @@ int *update_agent_network_policy_1_svc(rpc_trn_vsip_cidr_t *policy, struct svc_r
 		// cidr-related maps have tunnel-id(64 bits),
 		// local-ip(32 bits) prior to destination cidr;
 		// hence the final prefix length is 64+32+{cidr prefix}
-		cidr[i].prefixlen = policy->cidr_prefixlen + 96;
-		cidr[i].local_ip = policy->local_ip;
-		cidr[i].remote_ip = policy->cidr_ip;
-		bitmap[i] = policy->bit_val;
+		cidr[i].prefixlen = policy[i].cidr_prefixlen + 96;
+		cidr[i].local_ip = policy[i].local_ip;
+		cidr[i].remote_ip = policy[i].cidr_ip;
+		bitmap[i] = policy[i].bit_val;
 		policy++;
 	}
 
@@ -1677,15 +1677,15 @@ error:
 	return &result;
 }
 
-int *update_transit_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_t *ppo, struct svc_req *rqstp)
+int *update_transit_network_policy_protocol_port_1_svc(ppolist *ppo, struct svc_req *rqstp)
 {
 	UNUSED(rqstp);
 	static int result = -1;
 	int rc;
-	char *itf = ppo->interface;
-	int counter = ppo->count;
-	
 	TRN_LOG_INFO("update_transit_network_policy_protocol_port_1_svc service");
+
+	char *itf = ppo[0]->interface;
+	int counter = ppo[0]->count;
 	if (counter == 0){
 		TRN_LOG_INFO("policy list has length of 0. Nothing to do");
 		result = 0;
@@ -1703,13 +1703,13 @@ int *update_transit_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_t *ppo, 
 
 	for (int i = 0; i < counter; i++)
 	{
-		policies[i].tunnel_id = ppo[i].tunid;
-		policies[i].local_ip = ppo[i].local_ip;
-		policies[i].proto = ppo[i].proto;
-		policies[i].port = ppo[i].port;
-		bitmap[i] = ppo[i].bit_val;
+		policies[i].tunnel_id = ppo[i]->tunid;
+		policies[i].local_ip = ppo[i]->local_ip;
+		policies[i].proto = ppo[i]->proto;
+		policies[i].port = ppo[i]->port;
+		bitmap[i] = ppo[i]->bit_val;
 		TRN_LOG_INFO("ppo %d: tunnel_id  %ld; local ip  0x%x; protocol  %d; port  %d; count  %d\n", 
-				i, ppo[i].tunid, ppo[i].local_ip, ppo[i].proto, ppo[i].port, ppo[i].count);
+				i, ppo[i]->tunid, ppo[i]->local_ip, ppo[i]->proto, ppo[i]->port, ppo[i]->count);
 	}
 
 	rc = trn_update_transit_network_policy_protocol_port_map(md, policies, bitmap, counter);
@@ -1727,15 +1727,15 @@ error:
 	return &result;
 }
 
-int *update_agent_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_t *ppo, struct svc_req *rqstp)
+int *update_agent_network_policy_protocol_port_1_svc(ppolist *ppo, struct svc_req *rqstp)
 {
 	UNUSED(rqstp);
 	static int result = -1;
 	int rc;
-	char *itf = ppo->interface;
-	int counter = ppo->count;
-
 	TRN_LOG_INFO("update_agent_network_policy_protocol_port_1_svc service");
+
+	char *itf = ppo[0]->interface;
+	int counter = ppo[0]->count;
 	if (counter == 0){
 		TRN_LOG_INFO("policy list has length of 0. Nothing to do");
 		result = 0;
@@ -1753,13 +1753,13 @@ int *update_agent_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_t *ppo, st
 
 	for (int i = 0; i < counter; i++)
 	{
-		policies[i].tunnel_id = ppo[i].tunid;
-		policies[i].local_ip = ppo[i].local_ip;
-		policies[i].proto = ppo[i].proto;
-		policies[i].port = ppo[i].port;
-		bitmap[i] = ppo[i].bit_val;
+		policies[i].tunnel_id = ppo[i]->tunid;
+		policies[i].local_ip = ppo[i]->local_ip;
+		policies[i].proto = ppo[i]->proto;
+		policies[i].port = ppo[i]->port;
+		bitmap[i] = ppo[i]->bit_val;
 		TRN_LOG_INFO("ppo %d: tunnel_id  %ld; local ip  0x%x; protocol  %d; port  %d; count  %d\n", 
-				i, ppo[i].tunid, ppo[i].local_ip, ppo[i].proto, ppo[i].port, ppo[i].count);
+				i, ppo[i]->tunid, ppo[i]->local_ip, ppo[i]->proto, ppo[i]->port, ppo[i]->count);
 	}
 
 	rc = trn_update_agent_network_policy_protocol_port_map(md, policies, bitmap, counter);
@@ -1777,15 +1777,15 @@ error:
 	return &result;
 }
 
-int *delete_transit_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_key_t *ppo_key, struct svc_req *rqstp)
+int *delete_transit_network_policy_protocol_port_1_svc(ppokeylist *ppo_key, struct svc_req *rqstp)
 {
 	UNUSED(rqstp);
 	static int result = -1;
 	int rc;
-	char *itf = ppo_key->interface;
-	int counter = ppo_key->count;
-	
 	TRN_LOG_INFO("delete_transit_network_policy_protocol_port_1 service");
+
+	char *itf = ppo_key[0]->interface;
+	int counter = ppo_key[0]->count;	
 	if (counter == 0){
 		TRN_LOG_INFO("policy list has length of 0. Nothing to do");
 		result = 0;
@@ -1802,12 +1802,12 @@ int *delete_transit_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_key_t *p
 
 	for (int i = 0; i < counter; i++)
 	{
-		policies[i].tunnel_id = ppo_key[i].tunid;
-		policies[i].local_ip = ppo_key[i].local_ip;
-		policies[i].proto = ppo_key[i].proto;
-		policies[i].port = ppo_key[i].port;
+		policies[i].tunnel_id = ppo_key[i]->tunid;
+		policies[i].local_ip = ppo_key[i]->local_ip;
+		policies[i].proto = ppo_key[i]->proto;
+		policies[i].port = ppo_key[i]->port;
 		TRN_LOG_INFO("ppo %d: tunnel_id  %ld; local ip  0x%x; protocol  %d; port  %d; count  %d\n", 
-				i, ppo_key[i].tunid, ppo_key[i].local_ip, ppo_key[i].proto, ppo_key[i].port, ppo_key[i].count);
+				i, ppo_key[i]->tunid, ppo_key[i]->local_ip, ppo_key[i]->proto, ppo_key[i]->port, ppo_key[i]->count);
 	}
 
 	rc = trn_delete_transit_network_policy_protocol_port_map(md, policies, counter);
@@ -1825,16 +1825,15 @@ error:
 	return &result;
 }
 
-int *delete_agent_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_key_t *ppo_key, struct svc_req *rqstp)
+int *delete_agent_network_policy_protocol_port_1_svc(ppokeylist *ppo_key, struct svc_req *rqstp)
 {
 	UNUSED(rqstp);
 	static int result = -1;
 	int rc;
-	char *itf = ppo_key->interface;
-	int counter = ppo_key->count;
-
 	TRN_LOG_INFO("delete_agent_network_policy_protocol_port_1 service");
 
+	char *itf = ppo_key[0]->interface;
+	int counter = ppo_key[0]->count;
 	if (counter == 0){
 		TRN_LOG_INFO("policy list has length of 0. Nothing to do");
 		result = 0;
@@ -1850,12 +1849,12 @@ int *delete_agent_network_policy_protocol_port_1_svc(rpc_trn_vsip_ppo_key_t *ppo
 	}
 
 	for (int i = 0; i < counter; i++){
-		policies[i].tunnel_id = ppo_key[i].tunid;
-		policies[i].local_ip = ppo_key[i].local_ip;
-		policies[i].proto = ppo_key[i].proto;
-		policies[i].port = ppo_key[i].port;
+		policies[i].tunnel_id = ppo_key[i]->tunid;
+		policies[i].local_ip = ppo_key[i]->local_ip;
+		policies[i].proto = ppo_key[i]->proto;
+		policies[i].port = ppo_key[i]->port;
 		TRN_LOG_INFO("ppo %d: tunnel_id  %ld; local ip  0x%x; protocol  %d; port  %d; count  %d\n", 
-				i, ppo_key[i].tunid, ppo_key[i].local_ip, ppo_key[i].proto, ppo_key[i].port, ppo_key[i].count);
+				i, ppo_key[i]->tunid, ppo_key[i]->local_ip, ppo_key[i]->proto, ppo_key[i]->port, ppo_key[i]->count);
 	}
 
 	rc = trn_delete_agent_network_policy_protocol_port_map(md, policies, counter);

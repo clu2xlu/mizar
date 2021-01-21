@@ -211,6 +211,10 @@ struct rpc_trn_vsip_ppo_key_t {
        int count;
 };
 
+typedef struct rpc_trn_vsip_ppo_t *ppolist;
+
+typedef struct rpc_trn_vsip_ppo_key_t *ppokeylist;
+
 /*----- Protocol. -----*/
 
 program RPC_TRANSIT_REMOTE_PROTOCOL {
@@ -247,14 +251,14 @@ program RPC_TRANSIT_REMOTE_PROTOCOL {
                 int DELETE_TRANSIT_NETWORK_POLICY(rpc_trn_vsip_cidr_key_t) = 24;
                 int UPDATE_TRANSIT_NETWORK_POLICY_ENFORCEMENT(rpc_trn_vsip_enforce_t) = 25;
                 int DELETE_TRANSIT_NETWORK_POLICY_ENFORCEMENT(rpc_trn_vsip_enforce_t) = 26;
-                int UPDATE_TRANSIT_NETWORK_POLICY_PROTOCOL_PORT(rpc_trn_vsip_ppo_t) = 27;
-                int DELETE_TRANSIT_NETWORK_POLICY_PROTOCOL_PORT(rpc_trn_vsip_ppo_key_t) = 28;
+                int UPDATE_TRANSIT_NETWORK_POLICY_PROTOCOL_PORT(ppolist) = 27;
+                int DELETE_TRANSIT_NETWORK_POLICY_PROTOCOL_PORT(ppokeylist) = 28;
                 int UPDATE_AGENT_NETWORK_POLICY(rpc_trn_vsip_cidr_t) = 29;
                 int DELETE_AGENT_NETWORK_POLICY(rpc_trn_vsip_cidr_key_t) = 30;
                 int UPDATE_AGENT_NETWORK_POLICY_ENFORCEMENT(rpc_trn_vsip_enforce_t) = 31;
                 int DELETE_AGENT_NETWORK_POLICY_ENFORCEMENT(rpc_trn_vsip_enforce_t) = 32;
-                int UPDATE_AGENT_NETWORK_POLICY_PROTOCOL_PORT(rpc_trn_vsip_ppo_t) = 33;
-                int DELETE_AGENT_NETWORK_POLICY_PROTOCOL_PORT(rpc_trn_vsip_ppo_key_t) = 34;
+                int UPDATE_AGENT_NETWORK_POLICY_PROTOCOL_PORT(ppolist) = 33;
+                int DELETE_AGENT_NETWORK_POLICY_PROTOCOL_PORT(ppokeylist) = 34;
 
           } = 1;
 

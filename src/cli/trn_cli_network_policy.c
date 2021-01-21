@@ -510,14 +510,13 @@ int trn_cli_update_transit_network_policy_protocol_port_subcmd(CLIENT *clnt, int
 	}
 
 	int *rc;
-
 	int counter = cJSON_GetArraySize(json_str); 
 	if (counter <= 0) {
 		print_err("Input policy size is less than or equal to zero. Please check your input. \n");
 		return -EINVAL;
 	}
 
-	struct rpc_trn_vsip_ppo_t ppos[counter];
+	ppolist ppos = (rpc_trn_vsip_ppo_t *) malloc(6 * sizeof(rpc_trn_vsip_ppo_t));
 	char rpc[] = "update_transit_network_policy_protocol_port_1";
 
 	for (int i = 0; i < counter; i++)
@@ -536,7 +535,7 @@ int trn_cli_update_transit_network_policy_protocol_port_subcmd(CLIENT *clnt, int
 	}
 	cJSON_Delete(json_str);
 
-	rc = update_transit_network_policy_protocol_port_1(ppos, clnt);
+	rc = update_transit_network_policy_protocol_port_1(&ppos, clnt);
 	if (rc == (int *)NULL) {
 		print_err("RPC Error: client call failed: update_transit_network_policy_protocol_port_1 \n");
 		return -EINVAL;
@@ -588,7 +587,7 @@ int trn_cli_update_agent_network_policy_protocol_port_subcmd(CLIENT *clnt, int a
 		return -EINVAL;
 	}
 
-	struct rpc_trn_vsip_ppo_t ppos[counter];
+	ppolist ppos = (rpc_trn_vsip_ppo_t *) malloc(6 * sizeof(rpc_trn_vsip_ppo_t));
 	char rpc[] = "update_agent_network_policy_protocol_port_1";
 
 	for (int i = 0; i < counter; i++)
@@ -607,7 +606,7 @@ int trn_cli_update_agent_network_policy_protocol_port_subcmd(CLIENT *clnt, int a
 	}
 	cJSON_Delete(json_str);
 
-	rc = update_agent_network_policy_protocol_port_1(ppos, clnt);
+	rc = update_agent_network_policy_protocol_port_1(&ppos, clnt);
 	if (rc == (int *)NULL) {
 		print_err("RPC Error: client call failed: update_agent_network_policy_protocol_port_1 \n");
 		return -EINVAL;
@@ -659,7 +658,7 @@ int trn_cli_delete_transit_network_policy_protocol_port_subcmd(CLIENT *clnt, int
 		return -EINVAL;
 	}
 
-	struct rpc_trn_vsip_ppo_key_t ppo_keys[counter];
+	ppokeylist ppo_keys = (rpc_trn_vsip_ppo_key_t *) malloc(6 * sizeof(rpc_trn_vsip_ppo_key_t));
 	char rpc[] = "delete_transit_network_policy_protocol_port_1";
 
 	for (int i = 0; i < counter; i++)
@@ -687,7 +686,7 @@ int trn_cli_delete_transit_network_policy_protocol_port_subcmd(CLIENT *clnt, int
 		dump_protocol_port_policy_key(&ppo_keys[k]);
 	}
 
-	rc = delete_transit_network_policy_protocol_port_1(ppo_keys, clnt);
+	rc = delete_transit_network_policy_protocol_port_1(&ppo_keys, clnt);
 	if (rc == (int *)NULL) {
 		print_err("RPC Error: client call failed: delete_transit_network_policy_protocol_port_1 \n");
 		return -EINVAL;
@@ -730,7 +729,7 @@ int trn_cli_delete_agent_network_policy_protocol_port_subcmd(CLIENT *clnt, int a
 		return -EINVAL;
 	}
 
-	struct rpc_trn_vsip_ppo_key_t ppo_keys[counter];
+	ppokeylist ppo_keys = (rpc_trn_vsip_ppo_key_t *) malloc(6 * sizeof(rpc_trn_vsip_ppo_key_t));
 	char rpc[] = "delete_agent_network_policy_protocol_port_1";
 
 	for (int i = 0; i < counter; i++)
@@ -758,7 +757,7 @@ int trn_cli_delete_agent_network_policy_protocol_port_subcmd(CLIENT *clnt, int a
 		dump_protocol_port_policy_key(&ppo_keys[k]);
 	}
 
-	rc = delete_agent_network_policy_protocol_port_1(ppo_keys, clnt);
+	rc = delete_agent_network_policy_protocol_port_1(&ppo_keys, clnt);
 	if (rc == (int *)NULL) {
 		print_err("RPC Error: client call failed: delete_agent_network_policy_protocol_port_1 \n");
 		return -EINVAL;
