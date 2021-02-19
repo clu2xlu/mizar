@@ -71,11 +71,24 @@ sudo mv /tmp/config.toml /etc/containerd/config.toml
 sudo systemctl restart containerd
 
 ####################
+echo Setup: Python 3.8.8
+
+wget -O $HOME/Python-3.8.8.tgz https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tgz
+tar -xzf $HOME/Python-3.8.8.tgz
+cd $HOME/Python-3.8.8
+sudo ./configure
+sudo make
+sudo make install
+sudo sed -i '1c\#!/usr/bin/python3.8 -Es' /usr/bin/lsb_release
+sudo ln -sfn /usr/local/bin/python3.8 /usr/bin/python3
+sudo apt install python3-pip
+/usr/local/bin/python3.8 -m pip install --upgrade pip
+
+####################
 
 echo Setup: Install miscellaneous
 
 sudo apt install awscli -y -q
-sudo apt install python-pip -y -q
 sudo apt install jq -y -q
 
 ####################
@@ -94,13 +107,11 @@ sudo apt-get update
 sudo apt-get install -y \
     build-essential clang-7 llvm-7 \
     libelf-dev \
-    python3 \
-    python3-pip \
     libcmocka-dev \
     lcov
 
 sudo apt install docker.io
-sudo pip3 install netaddr docker scapy
+sudo pip3 install netaddr docker scapy kopf
 sudo systemctl unmask docker.service
 sudo systemctl unmask docker.socket
 sudo systemctl start docker
@@ -129,7 +140,6 @@ pip3 install rpyc
 pip3 install pyroute2
 pip3 install ipaddress
 pip3 install netaddr
-pip3 install kopf
 pip3 install PyYAML
 
 ####################
