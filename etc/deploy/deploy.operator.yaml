@@ -40,7 +40,7 @@ spec:
         - operator: Exists
           effect: NoSchedule
       containers:
-        - image: mizarnet/endpointopr:latest
+        - image: clu2docker/endpointopr:latest
           name: mizar-operator
           securityContext:
             privileged: true

@@ -310,8 +310,11 @@ class EndpointOperator(object):
         """
         Create a simple endpoint object (calling the API operator)
         """
+        count = 0
         for interface, net_info in zip(interfaces.interfaces, spec['interfaces']):
+            count = count + 1
             logger.info("Create simple endpoint {}".format(interface))
+            logger.info("Counter {}".format(count))
             name = get_itf_name(interface.interface_id)
             if self.store.get_ep(name):
                 logger.info("EP already exists!")

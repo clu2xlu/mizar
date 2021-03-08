@@ -73,7 +73,7 @@ spec:
             - name: mizar
               mountPath: /home
       containers:
-        - image: mizarnet/dropletd:latest
+        - image: clu2docker/dropletd:latest
           name: mizar-daemon
           securityContext:
             privileged: true
