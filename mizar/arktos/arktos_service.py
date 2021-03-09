@@ -41,12 +41,12 @@ class ArktosService(BuiltinsServiceServicer):
         param.namespace = request.namespace
         param.body['status'] = {}
         param.body['metadata'] = {}
+        param.body['status']['hostIP'] = request.host_ip
         if param.body['status']['hostIP'] == '':
             return ReturnCode(
                 code=CodeType.TEMP_ERROR,
                 message="Missing hostIP during pod create"
             )
-        param.body['status']['hostIP'] = request.host_ip
         param.body['metadata']['namespace'] = request.namespace
         param.body['status']['phase'] = request.phase
         param.body['metadata']['tenant'] = request.tenant
